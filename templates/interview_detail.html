@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}面談詳細 - {{ interview.student_name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('students') }}">生徒一覧</a></li>
+    <li class="breadcrumb-item">
+      <a href="{{ url_for('student_detail', student_id=interview.student_id) }}">{{ interview.student_name }}</a>
+    </li>
+    <li class="breadcrumb-item active">面談詳細</li>
+  </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h2 class="mb-1">{{ interview.student_name }}
+      <span class="badge
+        {% if interview.interview_type == '入塾面談' %}bg-info
+        {% elif interview.interview_type == '定期面談' %}bg-success
+        {% else %}bg-warning text-dark{% endif %} fs-6">
+        {{ interview.interview_type }}
+      </span>
+    </h2>
+    <div class="text-muted">
+      {{ interview.interview_date }}
+      {% if interview.interviewer %}/ 担当：{{ interview.interviewer }}{% endif %}
+      {% if interview.grade %}/ {{ interview.grade }}{% endif %}
+      {% if interview.school %}/ {{ interview.school }}{% endif %}
+    </div>
+  </div>
+  <a href="{{ url_for('edit_interview', interview_id=interview.id) }}"
+     class="btn btn-outline-secondary">編集</a>
+</div>
+
+<!-- 面談内容 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header bg-primary text-white">学習状況・成績</div>
+      <div class="card-body">
+        <p class="mb-0" style="white-space:pre-wrap">{{ interview.study_status or '（記録なし）' }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header bg-danger text-white">課題・問題点</div>
+      <div class="card-body">
+        <p class="mb-0" style="white-space:pre-wrap">{{ interview.issues or '（記録なし）' }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header bg-success text-white">次回の目標・アクション</div>
+      <div class="card-body">
+        <p class="mb-0" style="white-space:pre-wrap">{{ interview.next_goals or '（記録なし）' }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 保護者連絡文 -->
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>保護者への連絡文（自動生成）</strong>
+    <button class="btn btn-sm btn-outline-success" onclick="copyContact()">コピー</button>
+  </div>
+  <div class="card-body">
+    <div class="parent-contact-box" id="contactText">{{ interview.parent_contact }}</div>
+  </div>
+</div>
+
+<script>
+function copyContact() {
+  const text = document.getElementById('contactText').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('連絡文をコピーしました');
+  });
+}
+</script>
+{% endblock %}
