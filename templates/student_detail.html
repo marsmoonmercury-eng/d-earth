@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }} - 塾管理システム{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('students') }}">生徒一覧</a></li>
+        <li class="breadcrumb-item active">{{ student.name }}</li>
+      </ol>
+    </nav>
+    <h2 class="mb-0">{{ student.name }}
+      {% if student.grade %}<small class="text-muted fs-5">（{{ student.grade }}）</small>{% endif %}
+    </h2>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('new_interview', student_id=student.id) }}" class="btn btn-success">+ 面談記録</a>
+    <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn btn-outline-secondary">編集</a>
+  </div>
+</div>
+
+<!-- 生徒情報 -->
+<div class="card mb-4">
+  <div class="card-header"><strong>生徒情報</strong></div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><th style="width:120px">学校</th><td>{{ student.school or '-' }}</td></tr>
+          <tr><th>レベル</th><td>{{ student.level or '-' }}</td></tr>
+          <tr><th>登録日</th><td>{{ student.created_at[:10] }}</td></tr>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><th style="width:120px">保護者名</th><td>{{ student.parent_name or '-' }}</td></tr>
+          <tr><th>保護者電話</th><td>{{ student.parent_phone or '-' }}</td></tr>
+        </table>
+      </div>
+    </div>
+    {% if student.notes %}
+    <div class="mt-2">
+      <strong>備考：</strong>
+      <p class="mb-0 text-muted">{{ student.notes }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 面談履歴 -->
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>面談履歴</strong>
+    <span class="badge bg-secondary">{{ interviews|length }}件</span>
+  </div>
+  <div class="card-body p-0">
+    {% if interviews %}
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>面談日</th>
+          <th>種類</th>
+          <th>担当者</th>
+          <th>学習状況</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in interviews %}
+        <tr>
+          <td>{{ i.interview_date }}</td>
+          <td>
+            <span class="badge
+              {% if i.interview_type == '入塾面談' %}bg-info
+              {% elif i.interview_type == '定期面談' %}bg-success
+              {% else %}bg-warning text-dark{% endif %}">
+              {{ i.interview_type }}
+            </span>
+          </td>
+          <td>{{ i.interviewer or '-' }}</td>
+          <td class="text-truncate" style="max-width:200px">{{ i.study_status or '-' }}</td>
+          <td>
+            <a href="{{ url_for('interview_detail', interview_id=i.id) }}"
+               class="btn btn-sm btn-outline-primary">詳細</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted p-3">まだ面談記録がありません。</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
