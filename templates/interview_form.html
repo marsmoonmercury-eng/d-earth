@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ '面談記録の編集' if interview else '面談記録の入力' }} - 塾管理システム{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('students') }}">生徒一覧</a></li>
+    <li class="breadcrumb-item">
+      <a href="{{ url_for('student_detail', student_id=student.id) }}">{{ student.name }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ '編集' if interview else '面談記録' }}</li>
+  </ol>
+</nav>
+
+<h2 class="mb-4">{{ student.name }} - {{ '面談記録の編集' if interview else '面談記録の入力' }}</h2>
+
+<div class="card p-4" style="max-width:700px">
+  <form method="post">
+    <div class="row g-3 mb-3">
+      <div class="col-6">
+        <label class="form-label fw-bold">面談種類 <span class="text-danger">*</span></label>
+        <select name="interview_type" class="form-select" required>
+          {% for t in interview_types %}
+          <option value="{{ t }}"
+            {{ 'selected' if interview and interview.interview_type == t }}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6">
+        <label class="form-label fw-bold">面談日 <span class="text-danger">*</span></label>
+        <input type="date" name="interview_date" class="form-control"
+               value="{{ interview.interview_date if interview else today }}" required>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">担当者</label>
+      <input type="text" name="interviewer" class="form-control"
+             value="{{ interview.interviewer if interview else '' }}" placeholder="担当者名">
+    </div>
+
+    <hr class="my-3">
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">学習状況・成績</label>
+      <textarea name="study_status" class="form-control" rows="4"
+                placeholder="例：数学は前回のテストで75点（+10点）。英語の単語テストは安定している。">{{ interview.study_status if interview else '' }}</textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">課題・問題点</label>
+      <textarea name="issues" class="form-control" rows="4"
+                placeholder="例：計算ミスが多い。記述問題の書き方が不十分。">{{ interview.issues if interview else '' }}</textarea>
+    </div>
+    <div class="mb-4">
+      <label class="form-label fw-bold">次回の目標・アクション</label>
+      <textarea name="next_goals" class="form-control" rows="4"
+                placeholder="例：次回のテストで数学80点以上を目指す。英作文の練習を週3回行う。">{{ interview.next_goals if interview else '' }}</textarea>
+    </div>
+
+    <div class="alert alert-info">
+      <small>保存後、入力内容をもとに<strong>保護者への連絡文が自動生成</strong>されます。</small>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">
+        {{ '更新する' if interview else '保存する' }}
+      </button>
+      <a href="{{ url_for('student_detail', student_id=student.id) }}"
+         class="btn btn-outline-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
