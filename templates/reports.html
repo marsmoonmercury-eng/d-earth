@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}レポート - 塾管理システム{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">面談種類別レポート</h2>
+
+<ul class="nav nav-tabs mb-4" id="reportTabs">
+  {% for t in interview_types %}
+  <li class="nav-item">
+    <a class="nav-link {% if loop.first %}active{% endif %}"
+       data-bs-toggle="tab" href="#tab-{{ loop.index }}">
+      {{ t }}
+      <span class="badge bg-secondary">{{ data[t]|length }}</span>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+<div class="tab-content">
+  {% for t in interview_types %}
+  <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="tab-{{ loop.index }}">
+    {% if data[t] %}
+    <div class="card mb-3">
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>面談日</th>
+              <th>生徒名</th>
+              <th>学年</th>
+              <th>担当者</th>
+              <th>学習状況</th>
+              <th>課題</th>
+              <th>次回目標</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in data[t] %}
+            <tr>
+              <td>{{ i.interview_date }}</td>
+              <td>
+                <a href="{{ url_for('student_detail', student_id=i.student_id) }}">
+                  {{ i.student_name }}
+                </a>
+              </td>
+              <td>{{ i.grade or '-' }}</td>
+              <td>{{ i.interviewer or '-' }}</td>
+              <td class="text-truncate" style="max-width:150px" title="{{ i.study_status }}">
+                {{ i.study_status or '-' }}
+              </td>
+              <td class="text-truncate" style="max-width:150px" title="{{ i.issues }}">
+                {{ i.issues or '-' }}
+              </td>
+              <td class="text-truncate" style="max-width:150px" title="{{ i.next_goals }}">
+                {{ i.next_goals or '-' }}
+              </td>
+              <td>
+                <a href="{{ url_for('interview_detail', interview_id=i.id) }}"
+                   class="btn btn-sm btn-outline-primary">詳細</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-secondary">{{ t }}の記録はまだありません。</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
