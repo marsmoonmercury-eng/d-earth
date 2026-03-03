@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}生徒一覧 - 塾管理システム{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">生徒一覧</h2>
+  <a href="{{ url_for('add_student') }}" class="btn btn-primary">+ 生徒登録</a>
+</div>
+
+<form class="mb-3 d-flex gap-2" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="氏名・学校名で検索"
+         class="form-control" style="max-width:300px">
+  <button class="btn btn-outline-secondary" type="submit">検索</button>
+  {% if q %}<a href="{{ url_for('students') }}" class="btn btn-outline-danger">クリア</a>{% endif %}
+</form>
+
+<div class="card">
+  <div class="card-body p-0">
+    {% if students %}
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>氏名</th>
+          <th>学年</th>
+          <th>学校</th>
+          <th>レベル</th>
+          <th>保護者名</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td><a href="{{ url_for('student_detail', student_id=s.id) }}">{{ s.name }}</a></td>
+          <td>{{ s.grade or '-' }}</td>
+          <td>{{ s.school or '-' }}</td>
+          <td>{{ s.level or '-' }}</td>
+          <td>{{ s.parent_name or '-' }}</td>
+          <td>
+            <a href="{{ url_for('student_detail', student_id=s.id) }}"
+               class="btn btn-sm btn-outline-primary">詳細</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted p-3">
+      {% if q %}「{{ q }}」に一致する生徒が見つかりません。{% else %}生徒が登録されていません。{% endif %}
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
