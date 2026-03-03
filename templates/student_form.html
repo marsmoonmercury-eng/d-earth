@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ '生徒編集' if student else '生徒登録' }} - 塾管理システム{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">{{ '生徒情報の編集' if student else '新規生徒登録' }}</h2>
+
+<div class="card p-4" style="max-width:600px">
+  <form method="post">
+    <div class="mb-3">
+      <label class="form-label fw-bold">生徒氏名 <span class="text-danger">*</span></label>
+      <input type="text" name="name" class="form-control"
+             value="{{ student.name if student else '' }}" required>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-6">
+        <label class="form-label fw-bold">学年</label>
+        <select name="grade" class="form-select">
+          <option value="">選択してください</option>
+          {% for g in grades %}
+          <option value="{{ g }}" {{ 'selected' if student and student.grade == g }}>{{ g }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6">
+        <label class="form-label fw-bold">レベル</label>
+        <select name="level" class="form-select">
+          <option value="">選択してください</option>
+          {% for lv in levels %}
+          <option value="{{ lv }}" {{ 'selected' if student and student.level == lv }}>{{ lv }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">学校名</label>
+      <input type="text" name="school" class="form-control"
+             value="{{ student.school if student else '' }}">
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-6">
+        <label class="form-label fw-bold">保護者名</label>
+        <input type="text" name="parent_name" class="form-control"
+               value="{{ student.parent_name if student else '' }}">
+      </div>
+      <div class="col-6">
+        <label class="form-label fw-bold">保護者電話番号</label>
+        <input type="text" name="parent_phone" class="form-control"
+               value="{{ student.parent_phone if student else '' }}">
+      </div>
+    </div>
+    <div class="mb-4">
+      <label class="form-label fw-bold">備考</label>
+      <textarea name="notes" class="form-control" rows="3">{{ student.notes if student else '' }}</textarea>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">
+        {{ '更新する' if student else '登録する' }}
+      </button>
+      <a href="{{ url_for('student_detail', student_id=student.id) if student else url_for('students') }}"
+         class="btn btn-outline-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
